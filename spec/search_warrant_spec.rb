@@ -6,31 +6,50 @@ describe SearchWarrant do
   end
 
   it 'traces initialization method' do
-    expect { ClassWithTrace.new(1) }
-      .to output("==> Calling initialize with [1]\n<== Returns 1\n").to_stdout
+    output = capture_stdout do
+      @object_with_trace = ClassWithSearchWarrant.new(1)
+    end
+    expect(output).to match(
+/==> In #{Regexp.escape(__FILE__)}:\d+:in `new'
+    Calling #{Regexp.escape(@object_with_trace.inspect.gsub(' @ivar=1', ''))}.initialize\(1\)
+<== Returns 1/
+    )
   end
 
   it 'traces instance var read access' do
-    # TODO: silence STDOUT here on init
-    object_with_trace = ClassWithTrace.new('ivar_value')
-    expect { object_with_trace.ivar }
-      .to output("==> Calling ivar with []\n<== Returns ivar_value\n").to_stdout
+    output = capture_stdout do
+      @object_with_trace = ClassWithSearchWarrant.new('ivar_value')
+      @object_with_trace.ivar
+    end
+    expect(output).to match(
+/==> In #{Regexp.escape(__FILE__)}:\d+:in `block \(3 levels\) in <top \(required\)>'
+    Calling #{Regexp.escape(@object_with_trace.inspect)}.ivar\(\)
+<== Returns "ivar_value"/
+    )
   end
 
   it 'traces simple instance method call (defined in class)' do
-    # TODO: silence STDOUT here on init
-    object_with_trace = ClassWithTrace.new('ivar_value')
-    expect { object_with_trace.simple_method(1, 2, 3) }
-      .to output("==> Calling simple_method with [1, 2, 3]\n<== Returns 6\n")
-      .to_stdout
+    output = capture_stdout do
+      @object_with_trace = ClassWithSearchWarrant.new('ivar_value')
+      @object_with_trace.simple_method(1, 2, 3)
+    end
+    expect(output).to match(
+/==> In #{Regexp.escape(__FILE__)}:\d+:in `block \(3 levels\) in <top \(required\)>'
+    Calling #{Regexp.escape(@object_with_trace.inspect)}.simple_method\(1, 2, 3\)
+<== Returns 6/
+    )
   end
 
   it 'traces yielding instance method call (defined in class)' do
-    # TODO: silence STDOUT here on init
-    object_with_trace = ClassWithTrace.new('ivar_value')
-    expect { object_with_trace.method_with_block { 123 } }
-      .to output("==> Calling method_with_block with []\n<== Returns 123\n")
-      .to_stdout
+    output = capture_stdout do
+      @object_with_trace = ClassWithSearchWarrant.new('ivar_value')
+      @object_with_trace.method_with_block { 123 }
+    end
+    expect(output).to match(
+/==> In #{Regexp.escape(__FILE__)}:\d+:in `block \(3 levels\) in <top \(required\)>'
+    Calling #{Regexp.escape(@object_with_trace.inspect)}.method_with_block\(\)
+<== Returns 123/
+    )
   end
 end
 

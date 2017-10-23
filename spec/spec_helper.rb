@@ -1,6 +1,17 @@
 $LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'search_warrant'
 
+# Due to the nature of this library, it is desirable NOT
+# to use RSpec's built-in output matcher...
+def capture_stdout
+  original_stdout = $stdout
+  $stdout = StringIO.new
+  yield
+  @buffer = $stdout.string
+ensure
+  $stdout = original_stdout
+end
+
 module ModuleBefore
   def included_method_before
     'method added BEFORE SearchWarrant'
