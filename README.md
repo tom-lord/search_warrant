@@ -1,8 +1,24 @@
 # SearchWarrant
 
-A library to trace method calls on a given class.
+A library to trace method calls on **any** given ruby class. Use with caution!
 
-More descriptive description to follow...
+## Danger
+
+This library was written primarily as a fun meta-programming chalenge; it's not intended for use in production!
+
+For one thing, this library could be massively simplified by utilising [Module#prepend](https://ruby-doc.org/core/Module.html#method-i-prepend).
+I intentionally used `Module#include` instead, to make the challenge more interesting.
+
+Moreover, core ruby actually provides a built-in means of tracing method calls: [`TracePoint`](https://ruby-doc.org/core/TracePoint.html).
+Therefore this functionality could instead be achieved via:
+
+```
+Tracepoint.new(:call, :c_call, :return, :c_return) do |trace|
+  # ...
+end
+```
+
+Now with that said, here's how this library works:
 
 ## Installation
 
@@ -40,15 +56,6 @@ Foo.new.hello('world')
 
  => "Hello, world"
 ```
-
-## Danger
-
-Do not use this in production!!
-
-I wrote this as a fun meta-programming challenge, with intended use for debugging
-in development/test environments only.
-
-You can use this library to trace *any* ruby class. Use with caution!
 
 ## Development
 
